@@ -1,0 +1,13 @@
+body { background: #1a1a1a; color: white; font-family: sans-serif; margin: 0; text-align: center; height: 100vh; display: flex; flex-direction: column; overflow: hidden; }
+#setup-screen, #game-screen { padding: 15px; flex: 1; display: flex; flex-direction: column; }
+.input-row { margin: 8px auto; background: #333; padding: 10px; border-radius: 8px; width: 90%; display: flex; justify-content: space-between; align-items: center; }
+input { width: 70px; padding: 8px; font-size: 1.1rem; border-radius: 5px; border: none; }
+#scoreboard { display: flex; justify-content: space-around; margin-bottom: 15px; border-bottom: 2px dashed #444; padding-bottom: 10px; }
+.player-box { flex: 1; padding: 5px; border-radius: 8px; }
+.active { background: rgba(255,255,255,0.2); box-shadow: inset 0 0 10px white; }
+.score-val { font-size: 2.2rem; font-weight: bold; }
+.numpad { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; flex: 1; padding-bottom: 10px; }
+button { padding: 15px; font-size: 1.4rem; border-radius: 8px; border: none; background: #444; color: white; touch-action: manipulation; }
+.btn-go { background: #2e7d32; padding: 18px; font-weight: bold; font-size: 1.3rem; margin-top: 10px; }
+.btn-enter { background: #2e7d32; grid-column: span 2; }
+#preview { font-size: 2.5rem; background: #000; margin-bottom: 8px; height: 60px; line-height: 60px; border-radius: 5px; color: #4caf50; font-family: monospace; }

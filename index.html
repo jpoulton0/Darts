@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en-GB">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Darts Scorer</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div id="setup-screen">
+<h2>🎯 Darts Setup</h2>
+<div class="input-row"><span>P1:</span><input type="number" id="s1" value="501"></div>
+<div class="input-row"><span>P2:</span><input type="number" id="s2" value="501"></div>
+<div class="input-row"><span>P3:</span><input type="number" id="s3" value="501"></div>
+<div class="input-row"><span>P4:</span><input type="number" id="s4" value="501"></div>
+<button class="btn-go" onclick="launchGame()">START GAME</button>
+</div>
+
+<div id="game-screen" style="display:none">
+<div id="scoreboard"></div>
+<div id="preview">0</div>
+<div class="numpad">
+<button onclick="addNum(1)">1</button><button onclick="addNum(2)">2</button><button onclick="addNum(3)">3</button>
+<button onclick="addNum(4)">4</button><button onclick="addNum(5)">5</button><button onclick="addNum(6)">6</button>
+<button onclick="addNum(7)">7</button><button onclick="addNum(8)">8</button><button onclick="addNum(9)">9</button>
+<button style="background:#c62828" onclick="doUndo()">UNDO</button><button onclick="addNum(0)">0</button>
+<button class="btn-enter" onclick="submit()">ENTER</button>
+</div>
+</div>
+<script src="script.js"></script>
+</body>
+</html>
