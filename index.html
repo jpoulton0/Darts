@@ -8,12 +8,29 @@
 </head>
 <body>
 <div id="setup-screen">
-<h2>🎯 Darts Setup</h2>
-<div class="input-row"><span>P1:</span><input type="number" id="s1" value="501"></div>
-<div class="input-row"><span>P2:</span><input type="number" id="s2" value="501"></div>
-<div class="input-row"><span>P3:</span><input type="number" id="s3" value="501"></div>
-<div class="input-row"><span>P4:</span><input type="number" id="s4" value="501"></div>
-<button class="btn-go" onclick="launchGame()">START GAME</button>
+    <h2>🎯 Lichfield Arrers - 1st to 25</h2>
+    <p style="font-size: 0.8rem; margin: 0;">Name | Score | Legs Won</p>
+    <div class="input-row">
+        <input type="text" id="n1" value="Player 1" style="width: 100px;">
+        <input type="number" id="s1" value="501" style="width: 60px;">
+        <input type="number" id="l1" value="0" style="width: 40px;">
+    </div>
+    <div class="input-row">
+        <input type="text" id="n2" value="Player 2" style="width: 100px;">
+        <input type="number" id="s2" value="501" style="width: 60px;">
+        <input type="number" id="l2" value="0" style="width: 40px;">
+    </div>
+    <div class="input-row">
+        <input type="text" id="n3" value="Player 3" style="width: 100px;">
+        <input type="number" id="s3" value="501" style="width: 60px;">
+        <input type="number" id="l3" value="0" style="width: 40px;">
+    </div>
+    <div class="input-row">
+        <input type="text" id="n4" value="Player 4" style="width: 100px;">
+        <input type="number" id="s4" value="501" style="width: 60px;">
+        <input type="number" id="l4" value="0" style="width: 40px;">
+    </div>
+    <button class="btn-go" onclick="launchGame()">START GAME</button>
 </div>
 
 <div id="game-screen" style="display:none">
