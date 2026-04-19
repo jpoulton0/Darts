@@ -1,11 +1,14 @@
-let gs = { p: [], idx: 0, cur: "" };
+let gs = { p: [], idx: 0, cur: "", starts: [] }; // Added 'starts' to remember handicaps
 
 function launchGame() {
     gs.p = [];
+    gs.starts = []; // Clear old handicaps
     for(let i=1; i<=4; i++) {
         let nameValue = document.getElementById('n' + i).value;
-        let scoreValue = parseInt(document.getElementById('s' + i).value);
+        let scoreValue = parseInt(document.getElementById('s' + i).value) || 501;
         let legsValue = parseInt(document.getElementById('l' + i).value) || 0;
+        
+        gs.starts.push(scoreValue); // Save the handicap you entered
         gs.p.push({
             n: nameValue, 
             s: scoreValue, 
@@ -43,27 +46,30 @@ function submit() {
         currentPlayer.s -= v;
         
         if(currentPlayer.s === 0) {
-            // SHOW CUSTOM MODAL INSTEAD OF BROWSER ALERT
+            // 1. Show the win message
             document.getElementById('win-message').innerText = currentPlayer.n + " WINS!";
             document.getElementById('win-modal').style.display = 'flex';
+            
+            // 2. AUTOMATICALLY add 1 to their leg count in the setup screen
+            let legInput = document.getElementById('l' + (gs.idx + 1));
+            legInput.value = parseInt(legInput.value) + 1;
         }
 
         gs.idx = (gs.idx + 1) % 4;
     } else { 
-        // You can leave this as an alert for errors, or ignore it
+        alert("Invalid score or bust!"); 
     }
     gs.cur = "";
     draw();
 }
 
 function closeWinModal() {
-    // Hide the modal
     document.getElementById('win-modal').style.display = 'none';
-    // Return to setup screen
     document.getElementById('game-screen').style.display = 'none';
     document.getElementById('setup-screen').style.display = 'flex';
-    // Reset handicap scores for next leg
+    
+    // REPLACEMENT LOGIC: Use the saved 'starts' handicaps instead of "501"
     for(let i=1; i<=4; i++) {
-        document.getElementById('s'+i).value = "501"; 
+        document.getElementById('s'+i).value = gs.starts[i-1]; 
     }
 }
