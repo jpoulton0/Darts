@@ -1,19 +1,12 @@
 let gs = { p: [], idx: 0, cur: "" };
 
 function launchGame() {
-    gs.p = []; // Clear previous game data
-    for(let i=1; i<=4; i++) {
-        let nameValue = document.getElementById('n' + i).value;
-        let scoreValue = parseInt(document.getElementById('s' + i).value);
-        gs.p.push({
-            n: nameValue, 
-            s: scoreValue, 
-            legs: 0 // We're adding this now to prepare for the tournament update!
-        });
-    }
-    document.getElementById('setup-screen').style.display = 'none';
-    document.getElementById('game-screen').style.display = 'flex';
-    draw();
+for(let i=1; i<=4; i++) {
+gs.p.push({n:'P'+i, s:parseInt(document.getElementById('s'+i).value), h:[] });
+}
+document.getElementById('setup-screen').style.display='none';
+document.getElementById('game-screen').style.display='flex';
+draw();
 }
 
 function draw() {
