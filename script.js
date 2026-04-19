@@ -1,20 +1,24 @@
-let gs = { p: [], idx: 0, cur: "", starts: [] }; // Added 'starts' to remember handicaps
+let gs = { p: [], idx: 0, cur: "", starts: [], startingPlayerIndex: 0 };
 
 function launchGame() {
     gs.p = [];
-    gs.starts = []; // Clear old handicaps
+    gs.starts = [];
     for(let i=1; i<=4; i++) {
         let nameValue = document.getElementById('n' + i).value;
         let scoreValue = parseInt(document.getElementById('s' + i).value) || 501;
         let legsValue = parseInt(document.getElementById('l' + i).value) || 0;
         
-        gs.starts.push(scoreValue); // Save the handicap you entered
+        gs.starts.push(scoreValue);
         gs.p.push({
             n: nameValue, 
             s: scoreValue, 
             legs: legsValue
         });
     }
+
+    // Set the first player for this leg based on the rotation
+    gs.idx = gs.startingPlayerIndex;
+    
     document.getElementById('setup-screen').style.display = 'none';
     document.getElementById('game-screen').style.display = 'flex';
     draw();
@@ -35,7 +39,6 @@ function draw() {
 }
 
 function addNum(n) { if(gs.cur.length < 3) { gs.cur += n; draw(); } }
-
 function doUndo() { gs.cur = ""; draw(); }
 
 function submit() {
@@ -46,13 +49,16 @@ function submit() {
         currentPlayer.s -= v;
         
         if(currentPlayer.s === 0) {
-            // 1. Show the win message
             document.getElementById('win-message').innerText = currentPlayer.n + " WINS!";
             document.getElementById('win-modal').style.display = 'flex';
             
-            // 2. AUTOMATICALLY add 1 to their leg count in the setup screen
+            // Auto-increment the leg box in the setup screen
             let legInput = document.getElementById('l' + (gs.idx + 1));
             legInput.value = parseInt(legInput.value) + 1;
+
+            // PREPARE FOR NEXT LEG: Move the starting player to the next person in line
+            // This ensures Leg 1 = P1, Leg 2 = P2, Leg 3 = P3, Leg 4 = P4, Leg 5 = P1
+            gs.startingPlayerIndex = (gs.startingPlayerIndex + 1) % 4;
         }
 
         gs.idx = (gs.idx + 1) % 4;
@@ -68,7 +74,6 @@ function closeWinModal() {
     document.getElementById('game-screen').style.display = 'none';
     document.getElementById('setup-screen').style.display = 'flex';
     
-    // REPLACEMENT LOGIC: Use the saved 'starts' handicaps instead of "501"
     for(let i=1; i<=4; i++) {
         document.getElementById('s'+i).value = gs.starts[i-1]; 
     }
