@@ -42,15 +42,20 @@ function submit() {
     if(v <= 180 && (currentPlayer.s - v >= 0)) {
         currentPlayer.s -= v;
         
-        // Check for a win (reaches exactly 0)
         if(currentPlayer.s === 0) {
             alert(currentPlayer.n + " WINS THE LEG!");
-            // We will handle the "Return to Scoreboard" logic in the next step
+            // Return to setup screen so you can add a leg to their total
+            document.getElementById('game-screen').style.display = 'none';
+            document.getElementById('setup-screen').style.display = 'flex';
+            // We reset the scores in the input boxes for the next leg
+            for(let i=1; i<=4; i++) {
+                document.getElementById('s'+i).value = "501"; 
+            }
         }
 
         gs.idx = (gs.idx + 1) % 4;
     } else { 
-        alert("Invalid score"); 
+        alert("Invalid score or bust!"); 
     }
     gs.cur = "";
     draw();
