@@ -43,20 +43,27 @@ function submit() {
         currentPlayer.s -= v;
         
         if(currentPlayer.s === 0) {
-            alert(currentPlayer.n + " WINS THE LEG!");
-            // Return to setup screen so you can add a leg to their total
-            document.getElementById('game-screen').style.display = 'none';
-            document.getElementById('setup-screen').style.display = 'flex';
-            // We reset the scores in the input boxes for the next leg
-            for(let i=1; i<=4; i++) {
-                document.getElementById('s'+i).value = "501"; 
-            }
+            // SHOW CUSTOM MODAL INSTEAD OF BROWSER ALERT
+            document.getElementById('win-message').innerText = currentPlayer.n + " WINS!";
+            document.getElementById('win-modal').style.display = 'flex';
         }
 
         gs.idx = (gs.idx + 1) % 4;
     } else { 
-        alert("Invalid score or bust!"); 
+        // You can leave this as an alert for errors, or ignore it
     }
     gs.cur = "";
     draw();
+}
+
+function closeWinModal() {
+    // Hide the modal
+    document.getElementById('win-modal').style.display = 'none';
+    // Return to setup screen
+    document.getElementById('game-screen').style.display = 'none';
+    document.getElementById('setup-screen').style.display = 'flex';
+    // Reset handicap scores for next leg
+    for(let i=1; i<=4; i++) {
+        document.getElementById('s'+i).value = "501"; 
+    }
 }

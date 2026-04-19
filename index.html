@@ -10,31 +10,31 @@
 <div id="setup-screen">
     <h2>🎯 Lichfield Arrers - 1st to 25</h2>
     
-    <div style="display: flex; justify-content: space-around; width: 92%; margin: 0 auto; font-size: 0.8rem; font-weight: bold; color: #aaa;">
+    <div style="display: flex; justify-content: space-around; width: 92%; margin: 0 auto; font-size: 0.8rem; font-weight: bold; color: #aaa; padding-bottom: 5px;">
         <span style="width: 100px; text-align: left;">Name</span>
-        <span style="width: 60px;">Handicap</span>
-        <span style="width: 40px;">Legs Won</span>
+        <span style="width: 60px; text-align: center;">Handicap</span>
+        <span style="width: 40px; text-align: center;">Legs Won</span>
     </div>
 
     <div class="input-row">
         <input type="text" id="n1" value="Player 1" style="width: 100px;">
         <input type="number" id="s1" value="501" style="width: 60px;">
-        <input type="number" id="l1" value="0" style="width: 40px;">
+        <input type="number" id="l1" value="0" style="width: 40px; text-align: center;">
     </div>
     <div class="input-row">
         <input type="text" id="n2" value="Player 2" style="width: 100px;">
         <input type="number" id="s2" value="501" style="width: 60px;">
-        <input type="number" id="l2" value="0" style="width: 40px;">
+        <input type="number" id="l2" value="0" style="width: 40px; text-align: center;">
     </div>
     <div class="input-row">
         <input type="text" id="n3" value="Player 3" style="width: 100px;">
         <input type="number" id="s3" value="501" style="width: 60px;">
-        <input type="number" id="l3" value="0" style="width: 40px;">
+        <input type="number" id="l3" value="0" style="width: 40px; text-align: center;">
     </div>
     <div class="input-row">
         <input type="text" id="n4" value="Player 4" style="width: 100px;">
         <input type="number" id="s4" value="501" style="width: 60px;">
-        <input type="number" id="l4" value="0" style="width: 40px;">
+        <input type="number" id="l4" value="0" style="width: 40px; text-align: center;">
     </div>
     <button class="btn-go" onclick="launchGame()">START GAME</button>
 </div>
@@ -49,6 +49,12 @@
 <button style="background:#c62828" onclick="doUndo()">UNDO</button><button onclick="addNum(0)">0</button>
 <button class="btn-enter" onclick="submit()">ENTER</button>
 </div>
+</div>
+<div id="win-modal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.8); z-index:1000; justify-content:center; align-items:center;">
+    <div style="background:#333; padding:30px; border-radius:15px; text-align:center; border:2px solid #2e7d32; width:80%;">
+        <h1 id="win-message" style="color:#4caf50; margin-top:0;"></h1>
+        <button onclick="closeWinModal()" style="background:#2e7d32; width:100%; padding:20px; font-weight:bold;">RETURN TO SCOREBOARD</button>
+    </div>
 </div>
 <script src="script.js"></script>
 </body>
