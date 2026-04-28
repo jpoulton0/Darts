@@ -1,5 +1,12 @@
-let gs = { p: [], idx: 0, cur: "", starts: [], startingPlayerIndex: 0 };
+// --- GLOBAL DATA STORAGE ---
+// p: players, idx: current thrower, cur: typed score, starts: handicaps, 
+// startingPlayerIndex: who starts the leg, sessionLegCount: track leg #
+let gs = { p: [], idx: 0, cur: "", starts: [], startingPlayerIndex: 0, sessionLegCount: 1 };
 
+/**
+ * Runs when you click "NEW LEG"
+ * Gathers names/scores/legs from the boxes and starts the game
+ */
 function launchGame() {
     gs.p = [];
     gs.starts = [];
@@ -8,7 +15,7 @@ function launchGame() {
         let scoreValue = parseInt(document.getElementById('s' + i).value) || 501;
         let legsValue = parseInt(document.getElementById('l' + i).value) || 0;
         
-        gs.starts.push(scoreValue);
+        gs.starts.push(scoreValue); // Save the handicap to reset for next leg
         gs.p.push({
             n: nameValue, 
             s: scoreValue, 
@@ -16,18 +23,33 @@ function launchGame() {
         });
     }
 
-    // Set the first player for this leg based on the rotation
+    // Set the first thrower based on the tournament rotation (P1, then P2, etc.)
     gs.idx = gs.startingPlayerIndex;
+
+    // --- ANNOUNCEMENT: START OF LEG ---
+    let starterName = gs.p[gs.idx].n;
+    let startText = "Leg " + gs.sessionLegCount + " of the evening. " + starterName + " to throw first... Game on!";
+    let startMsg = new SpeechSynthesisUtterance(startText);
     
+    startMsg.rate = 1.1;  // Speed of voice
+    startMsg.pitch = 1.5; // Highness/Lowness of voice
+    
+    window.speechSynthesis.speak(startMsg);
+    
+    // Switch screens: Hide Setup, Show Game
     document.getElementById('setup-screen').style.display = 'none';
     document.getElementById('game-screen').style.display = 'flex';
     draw();
 }
 
+/**
+ * Updates the Visual Scoreboard
+ * Highlights the active player and shows the typed numbers
+ */
 function draw() {
     let h = "";
     gs.p.forEach((p, i) => {
-        let act = i === gs.idx ? 'active' : '';
+        let act = i === gs.idx ? 'active' : ''; // Check if it's this player's turn
         h += `<div class="player-box ${act}">
                 <div style="font-weight:bold">${p.n}</div>
                 <div class="score-val">${p.s}</div>
@@ -38,50 +60,65 @@ function draw() {
     document.getElementById('preview').innerText = gs.cur || "0";
 }
 
+// Numpad Logic: Limits entry to 3 digits (max 180)
 function addNum(n) { if(gs.cur.length < 3) { gs.cur += n; draw(); } }
+
+// Clear the current typed number (Undo button)
 function doUndo() { gs.cur = ""; draw(); }
 
+/**
+ * Runs when you click "ENTER"
+ * Subtracts score, checks for wins, and handles voice calls
+ */
 function submit() {
     let v = parseInt(gs.cur) || 0;
     let currentPlayer = gs.p[gs.idx];
 
+    // Validate: Score must be 180 or less and not leave a negative total
     if(v <= 180 && (currentPlayer.s - v >= 0)) {
         currentPlayer.s -= v;
         
+        // WIN CONDITION: Player hits exactly 0
         if(currentPlayer.s === 0) {
-	//--NEW: VOICE ANNOUNCEMENT ---
-            let text = "Game, shot, and the leg... " + currentPlayer.n;
-            let msg = new SpeechSynthesisUtterance(text);
-            window.speechSynthesis.speak(msg);
-	//--VOICE SPEED AND PITCH
-    msg.rate = 0.9;  // 1.0 is normal. 0.8 is slower/clearer. 1.2 is faster.
-    msg.pitch = 1.1 // 1.0 is normal. Higher is squeaky, lower is deeper.
-               // -------------------------------
+            // --- ANNOUNCEMENT: WINNER ---
+            let winText = "Game, shot, and the leg... " + currentPlayer.n;
+            let winMsg = new SpeechSynthesisUtterance(winText);
+            winMsg.rate = 1.1;
+            winMsg.pitch = 1.5;
+            window.speechSynthesis.speak(winMsg);
+
+            // Show the custom winner pop-up
             document.getElementById('win-message').innerText = currentPlayer.n + " WINS!";
             document.getElementById('win-modal').style.display = 'flex';
             
-            // Auto-increment the leg box in the setup screen
+            // Auto-update the "Legs Won" box on the setup screen for the winner
             let legInput = document.getElementById('l' + (gs.idx + 1));
             legInput.value = parseInt(legInput.value) + 1;
-
-            // PREPARE FOR NEXT LEG: Move the starting player to the next person in line
-            // This ensures Leg 1 = P1, Leg 2 = P2, Leg 3 = P3, Leg 4 = P4, Leg 5 = P1
+            
+            // LOGIC: Set who starts the NEXT leg
             gs.startingPlayerIndex = (gs.startingPlayerIndex + 1) % 4;
+            gs.sessionLegCount++; // Increase the session leg counter
         }
 
+        // Move the turn to the next player in the list
         gs.idx = (gs.idx + 1) % 4;
     } else { 
         alert("Invalid score or bust!"); 
     }
-    gs.cur = "";
+    gs.cur = ""; // Clear the typing area
     draw();
 }
 
+/**
+ * Runs when you click "RETURN TO SCOREBOARD"
+ * Takes you back to setup and puts the handicaps back in the boxes
+ */
 function closeWinModal() {
     document.getElementById('win-modal').style.display = 'none';
     document.getElementById('game-screen').style.display = 'none';
     document.getElementById('setup-screen').style.display = 'flex';
     
+    // Restore the original handicaps for the next leg
     for(let i=1; i<=4; i++) {
         document.getElementById('s'+i).value = gs.starts[i-1]; 
     }
