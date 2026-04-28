@@ -123,3 +123,4 @@ function closeWinModal() {
         document.getElementById('s'+i).value = gs.starts[i-1]; 
     }
 } 
+
