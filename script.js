@@ -53,7 +53,10 @@ function submit() {
             let text = "Game, shot, and the leg... " + currentPlayer.n;
             let msg = new SpeechSynthesisUtterance(text);
             window.speechSynthesis.speak(msg);
-            // -------------------------------
+	//--VOICE SPEED AND PITCH
+    msg.rate = 0.9;  // 1.0 is normal. 0.8 is slower/clearer. 1.2 is faster.
+    msg.pitch = 1.1 // 1.0 is normal. Higher is squeaky, lower is deeper.
+               // -------------------------------
             document.getElementById('win-message').innerText = currentPlayer.n + " WINS!";
             document.getElementById('win-modal').style.display = 'flex';
             
