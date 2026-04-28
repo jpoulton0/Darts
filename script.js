@@ -15,7 +15,7 @@ function launchGame() {
         let scoreValue = parseInt(document.getElementById('s' + i).value) || 501;
         let legsValue = parseInt(document.getElementById('l' + i).value) || 0;
         
-        gs.starts.push(scoreValue); // Save the handicap to reset for next leg
+        gs.starts.push(scoreValue);
         gs.p.push({
             n: nameValue, 
             s: scoreValue, 
@@ -23,23 +23,23 @@ function launchGame() {
         });
     }
 
-    // Set the first thrower based on the tournament rotation (P1, then P2, etc.)
     gs.idx = gs.startingPlayerIndex;
 
-    // --- ANNOUNCEMENT: START OF LEG ---
-    let starterName = gs.p[gs.idx].n;
-    let startText = "Leg " + gs.sessionLegCount + " of the evening. " + starterName + " to throw first... Game on!";
-    let startMsg = new SpeechSynthesisUtterance(startText);
-    
-    startMsg.rate = 1.1;  // Speed of voice
-    startMsg.pitch = 1.5; // Highness/Lowness of voice
-    
-    window.speechSynthesis.speak(startMsg);
-    
-    // Switch screens: Hide Setup, Show Game
+    // Switch screens first
     document.getElementById('setup-screen').style.display = 'none';
     document.getElementById('game-screen').style.display = 'flex';
     draw();
+
+    // --- ANNOUNCEMENT WITH DELAY ---
+    // We wait 100 milliseconds (0.1 seconds) before speaking
+    setTimeout(() => {
+        let starterName = gs.p[gs.idx].n;
+        let startText = "Leg " + gs.sessionLegCount + " of the evening. " + starterName + " to throw first... Game on!";
+        let startMsg = new SpeechSynthesisUtterance(startText);
+        startMsg.rate = 1.1;
+        startMsg.pitch = 1.5;
+        window.speechSynthesis.speak(startMsg);
+    }, 100); 
 }
 
 /**
