@@ -49,6 +49,11 @@ function submit() {
         currentPlayer.s -= v;
         
         if(currentPlayer.s === 0) {
+	//--NEW: VOICE ANNOUNCEMENT ---
+            let text = currentPlayer.n + " wins the leg!";
+            let msg = new SpeechSynthesisUtterance(text);
+            window.speechSynthesis.speak(msg);
+            // -------------------------------
             document.getElementById('win-message').innerText = currentPlayer.n + " WINS!";
             document.getElementById('win-modal').style.display = 'flex';
             
