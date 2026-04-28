@@ -50,7 +50,7 @@ function submit() {
         
         if(currentPlayer.s === 0) {
 	//--NEW: VOICE ANNOUNCEMENT ---
-            let text = currentPlayer.n + " wins the leg!";
+            let text = "Game, shot, and the leg... " + currentPlayer.n;
             let msg = new SpeechSynthesisUtterance(text);
             window.speechSynthesis.speak(msg);
             // -------------------------------
