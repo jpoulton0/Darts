@@ -122,4 +122,4 @@ function closeWinModal() {
     for(let i=1; i<=4; i++) {
         document.getElementById('s'+i).value = gs.starts[i-1]; 
     }
-}
+} 
