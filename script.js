@@ -148,7 +148,7 @@ function submit() {
                 
                 // Speed slightly increased for a tighter call
                 reqMsg.rate = 0.95 
-                reqMsg.pitch = 1.5 
+                reqMsg.pitch = 3
                 window.speechSynthesis.speak(reqMsg);
             }
         }, 1000); 
