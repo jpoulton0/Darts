@@ -1,6 +1,6 @@
 // --- CHECKOUT DATA ---
 const checkoutMap = {
-     // 170 to 160
+    // 170 to 160
     170: "T20 T20 BULL", 167: "T20 T19 BULL", 164: "T20 T18 BULL", 161: "T20 T17 BULL", 160: "T20 T20 D20",
     // 150s
     158: "T20 T20 D19", 157: "T20 T19 D20", 156: "T20 T20 D18", 155: "T20 T19 D19", 154: "T20 T18 D20",
@@ -37,9 +37,6 @@ const checkoutMap = {
 // --- GLOBAL DATA STORAGE ---
 let gs = { p: [], idx: 0, cur: "", starts: [], startingPlayerIndex: 0, sessionLegCount: 1 };
 
-/**
- * Runs when you click "NEW LEG"
- */
 function launchGame() {
     gs.p = [];
     gs.starts = [];
@@ -55,15 +52,11 @@ function launchGame() {
             legs: legsValue
         });
     }
-
     gs.idx = gs.startingPlayerIndex;
-
-    // Switch screens first
     document.getElementById('setup-screen').style.display = 'none';
     document.getElementById('game-screen').style.display = 'flex';
     draw();
 
-    // Announcement with delay to help iPhone browsers
     setTimeout(() => {
         let starterName = gs.p[gs.idx].n;
         let startText = "Leg " + gs.sessionLegCount + " of the evening. " + starterName + " to throw first... Game on!";
@@ -74,9 +67,6 @@ function launchGame() {
     }, 500); 
 }
 
-/**
- * Updates the Visual Scoreboard and Checkout Suggestion
- */
 function draw() {
     let h = "";
     gs.p.forEach((p, i) => {
@@ -90,28 +80,21 @@ function draw() {
     document.getElementById('scoreboard').innerHTML = h;
     document.getElementById('preview').innerText = gs.cur || "0";
 
-    // --- CHECKOUT LOGIC ---
     let currentScore = gs.p[gs.idx].s;
     let suggestion = checkoutMap[currentScore] || ""; 
     document.getElementById('checkout-suggestion').innerText = suggestion;
 }
 
-// Numpad Logic
 function addNum(n) { if(gs.cur.length < 3) { gs.cur += n; draw(); } }
 function doUndo() { gs.cur = ""; draw(); }
 
-/**
- * Runs when you click "ENTER"
- */
 function submit() {
     let v = parseInt(gs.cur) || 0;
     let currentPlayer = gs.p[gs.idx];
 
-    // 1. Validate Score
     if(v <= 180 && (currentPlayer.s - v >= 0)) {
         currentPlayer.s -= v;
         
-        // 2. Check for Win
         if(currentPlayer.s === 0) {
             let winText = "Game, shot, and the leg... " + currentPlayer.n;
             let winMsg = new SpeechSynthesisUtterance(winText);
@@ -133,21 +116,28 @@ function submit() {
             return; 
         }
 
-        // 3. Move turn to Next Player
         gs.idx = (gs.idx + 1) % 4;
         let nextPlayer = gs.p[gs.idx];
 
-        // 4. Wait 1 second, then announce the checkout if possible
+        // --- DRAMATIC REFEREE CALL ---
         setTimeout(() => {
-            // Bogey numbers that cannot be checked out
             const bogeys = [169, 168, 166, 165, 163, 162, 159];
             
-            // Speak if it's 170 or under and NOT an impossible bogey number
             if (nextPlayer.s <= 170 && !bogeys.includes(nextPlayer.s)) {
-                let reqText = nextPlayer.n + ", you require " + nextPlayer.s;
+                let score = nextPlayer.s;
+                let scoreText = score.toString();
+
+                // If score is 100+, stretch out the pronunciation
+                if (score >= 100) {
+                    scoreText = "one... hundred... and... " + (score - 100);
+                }
+
+                let reqText = nextPlayer.n + "... you require... " + scoreText;
                 let reqMsg = new SpeechSynthesisUtterance(reqText);
-                reqMsg.rate = 1.1;
-                reqMsg.pitch = 1.4; 
+                
+                // Slow down the rate for drama
+                reqMsg.rate = 0.8; 
+                reqMsg.pitch = 1.3; 
                 window.speechSynthesis.speak(reqMsg);
             }
         }, 1000); 
@@ -158,9 +148,7 @@ function submit() {
     gs.cur = "";
     draw();
 }
-/**
- * Runs when you click "RETURN TO SCOREBOARD"
- */
+
 function closeWinModal() {
     document.getElementById('win-modal').style.display = 'none';
     document.getElementById('game-screen').style.display = 'none';
