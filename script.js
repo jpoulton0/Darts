@@ -137,16 +137,20 @@ function submit() {
         gs.idx = (gs.idx + 1) % 4;
         let nextPlayer = gs.p[gs.idx];
 
-        // 4. Wait 1 second, then announce the checkout if it exists
+        // 4. Wait 1 second, then announce the checkout if possible
         setTimeout(() => {
-            if (checkoutMap[nextPlayer.s]) {
+            // Bogey numbers that cannot be checked out
+            const bogeys = [169, 168, 166, 165, 163, 162, 159];
+            
+            // Speak if it's 170 or under and NOT an impossible bogey number
+            if (nextPlayer.s <= 170 && !bogeys.includes(nextPlayer.s)) {
                 let reqText = nextPlayer.n + ", you require " + nextPlayer.s;
                 let reqMsg = new SpeechSynthesisUtterance(reqText);
                 reqMsg.rate = 1.1;
                 reqMsg.pitch = 1.4; 
                 window.speechSynthesis.speak(reqMsg);
             }
-        }, 1000); // 1000ms = 1 second delay
+        }, 1000); 
 
     } else { 
         alert("Invalid score or bust!"); 
@@ -154,7 +158,6 @@ function submit() {
     gs.cur = "";
     draw();
 }
-
 /**
  * Runs when you click "RETURN TO SCOREBOARD"
  */
