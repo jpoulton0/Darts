@@ -37,6 +37,9 @@ const checkoutMap = {
 // --- GLOBAL DATA STORAGE ---
 let gs = { p: [], idx: 0, cur: "", starts: [], startingPlayerIndex: 0, sessionLegCount: 1 };
 
+/**
+ * Runs when you click "NEW LEG"
+ */
 function launchGame() {
     gs.p = [];
     gs.starts = [];
@@ -52,7 +55,9 @@ function launchGame() {
             legs: legsValue
         });
     }
+
     gs.idx = gs.startingPlayerIndex;
+
     document.getElementById('setup-screen').style.display = 'none';
     document.getElementById('game-screen').style.display = 'flex';
     draw();
@@ -67,6 +72,9 @@ function launchGame() {
     }, 500); 
 }
 
+/**
+ * Updates the Visual Scoreboard and Checkout Suggestion
+ */
 function draw() {
     let h = "";
     gs.p.forEach((p, i) => {
@@ -85,9 +93,13 @@ function draw() {
     document.getElementById('checkout-suggestion').innerText = suggestion;
 }
 
+// Numpad Logic
 function addNum(n) { if(gs.cur.length < 3) { gs.cur += n; draw(); } }
 function doUndo() { gs.cur = ""; draw(); }
 
+/**
+ * Runs when you click "ENTER"
+ */
 function submit() {
     let v = parseInt(gs.cur) || 0;
     let currentPlayer = gs.p[gs.idx];
@@ -119,7 +131,7 @@ function submit() {
         gs.idx = (gs.idx + 1) % 4;
         let nextPlayer = gs.p[gs.idx];
 
-        // --- DRAMATIC REFEREE CALL ---
+        // --- IMPROVED DRAMATIC CALL ---
         setTimeout(() => {
             const bogeys = [169, 168, 166, 165, 163, 162, 159];
             
@@ -127,7 +139,6 @@ function submit() {
                 let score = nextPlayer.s;
                 let scoreText = score.toString();
 
-                // If score is 100+, stretch out the pronunciation
                 if (score >= 100) {
                     scoreText = "one... hundred... and... " + (score - 100);
                 }
@@ -135,8 +146,8 @@ function submit() {
                 let reqText = nextPlayer.n + "... you require... " + scoreText;
                 let reqMsg = new SpeechSynthesisUtterance(reqText);
                 
-                // Slow down the rate for drama
-                reqMsg.rate = 0.8; 
+                // Speed slightly increased for a tighter call
+                reqMsg.rate = 0.9; 
                 reqMsg.pitch = 1.3; 
                 window.speechSynthesis.speak(reqMsg);
             }
@@ -149,6 +160,9 @@ function submit() {
     draw();
 }
 
+/**
+ * Runs when you click "RETURN TO SCOREBOARD"
+ */
 function closeWinModal() {
     document.getElementById('win-modal').style.display = 'none';
     document.getElementById('game-screen').style.display = 'none';
