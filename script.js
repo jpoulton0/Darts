@@ -147,8 +147,8 @@ function submit() {
                 let reqMsg = new SpeechSynthesisUtterance(reqText);
                 
                 // Speed slightly increased for a tighter call
-                reqMsg.rate = 0.95 
-                reqMsg.pitch = 3
+                reqMsg.rate = 0.98
+                reqMsg.pitch = 5
                 window.speechSynthesis.speak(reqMsg);
             }
         }, 1000); 
