@@ -52,7 +52,9 @@ function launchGame() {
         gs.p.push({
             n: nameValue, 
             s: scoreValue, 
-            legs: legsValue
+            legs: legsValue,
+            scoringPoints: 0, // Points scored while above 75
+            scoringDarts: 0   // Darts thrown while above 75
         });
     }
 
@@ -73,15 +75,22 @@ function launchGame() {
 }
 
 /**
- * Updates the Visual Scoreboard and Checkout Suggestion
+ * Updates the Visual Scoreboard, Averages, and Checkout Suggestion
  */
 function draw() {
     let h = "";
     gs.p.forEach((p, i) => {
         let act = i === gs.idx ? 'active' : '';
+        
+        // Calculate Scoring Average (only includes turns when starting score was > 75)
+        let avg = p.scoringDarts > 0 
+            ? ((p.scoringPoints / p.scoringDarts) * 3).toFixed(2) 
+            : "0.00";
+
         h += `<div class="player-box ${act}">
                 <div style="font-weight:bold">${p.n}</div>
                 <div class="score-val">${p.s}</div>
+                <div style="font-size:0.75rem; color:#00e676; font-weight:bold">3-Avg: ${avg}</div>
                 <div style="font-size:0.7rem; color:#aaa">Legs: ${p.legs}</div>
               </div>`;
     });
@@ -104,9 +113,19 @@ function submit() {
     let v = parseInt(gs.cur) || 0;
     let currentPlayer = gs.p[gs.idx];
 
+    // 1. Validate Score
     if(v <= 180 && (currentPlayer.s - v >= 0)) {
+        
+        // --- 75 CUTOFF LOGIC ---
+        // Only add to scoring average stats if the player started the turn above 75
+        if (currentPlayer.s > 75) {
+            currentPlayer.scoringPoints += v;
+            currentPlayer.scoringDarts += 3;
+        }
+
         currentPlayer.s -= v;
         
+        // 2. Check for Win
         if(currentPlayer.s === 0) {
             let winText = "Game, shot, and the leg... " + currentPlayer.n;
             let winMsg = new SpeechSynthesisUtterance(winText);
@@ -128,10 +147,11 @@ function submit() {
             return; 
         }
 
+        // 3. Move to next player
         gs.idx = (gs.idx + 1) % 4;
         let nextPlayer = gs.p[gs.idx];
 
-        // --- IMPROVED DRAMATIC CALL ---
+        // 4. Dramatic referee call
         setTimeout(() => {
             const bogeys = [169, 168, 166, 165, 163, 162, 159];
             
@@ -146,9 +166,8 @@ function submit() {
                 let reqText = nextPlayer.n + "... you require... " + scoreText;
                 let reqMsg = new SpeechSynthesisUtterance(reqText);
                 
-                // Speed slightly increased for a tighter call
-                reqMsg.rate = 0.98
-                reqMsg.pitch = 5
+                reqMsg.rate = 0.9; 
+                reqMsg.pitch = 1.3; 
                 window.speechSynthesis.speak(reqMsg);
             }
         }, 1000); 
