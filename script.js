@@ -106,10 +106,13 @@ function draw() {
             ? ((p.scoringPoints / p.scoringDarts) * 3).toFixed(2) 
             : "0.00";
 
+        let highCoText = p.highestCheckout > 0 ? p.highestCheckout : "-";
+
         h += `<div class="player-box ${act}">
                 <div style="font-weight:bold">${p.n}</div>
                 <div class="score-val">${p.s}</div>
                 <div style="font-size:0.75rem; color:#00e676; font-weight:bold">3-Avg: ${avg}</div>
+                <div style="font-size:0.7rem; color:#ffd54f">High CO: ${highCoText}</div>
                 <div style="font-size:0.7rem; color:#aaa">Legs: ${p.legs}</div>
               </div>`;
     });
@@ -242,7 +245,18 @@ function closeWinModal() {
     document.getElementById('game-screen').style.display = 'none';
     document.getElementById('setup-screen').style.display = 'flex';
     
+    // Update live session stats on setup screen for each player
     for(let i=1; i<=4; i++) {
-        document.getElementById('s'+i).value = gs.starts[i-1]; 
+        document.getElementById('s'+i).value = gs.starts[i-1];
+        
+        let p = gs.p[i-1];
+        if (p) {
+            let avg = p.scoringDarts > 0 
+                ? ((p.scoringPoints / p.scoringDarts) * 3).toFixed(2) 
+                : "0.00";
+            
+            document.getElementById('co' + i).innerText = p.highestCheckout > 0 ? p.highestCheckout : "-";
+            document.getElementById('avg' + i).innerText = avg;
+        }
     }
 }
