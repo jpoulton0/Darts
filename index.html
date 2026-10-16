@@ -10,31 +10,41 @@
 <div id="setup-screen">
     <h2>🎯 Lichfield Arrers - 1st to 25</h2>
     
-    <div style="display: flex; justify-content: space-around; width: 92%; margin: 0 auto; font-size: 0.8rem; font-weight: bold; color: #aaa; padding-bottom: 5px;">
-        <span style="width: 100px; text-align: left;">Name</span>
-        <span style="width: 60px; text-align: center;">Handicap</span>
-        <span style="width: 40px; text-align: center;">Legs Won</span>
+    <div style="display: flex; justify-content: space-around; width: 96%; margin: 0 auto; font-size: 0.8rem; font-weight: bold; color: #aaa; padding-bottom: 5px;">
+        <span style="width: 90px; text-align: left;">Name</span>
+        <span style="width: 50px; text-align: center;">Handicap</span>
+        <span style="width: 35px; text-align: center;">Legs</span>
+        <span style="width: 45px; text-align: center;">High CO</span>
+        <span style="width: 50px; text-align: center;">3-Avg</span>
     </div>
 
-    <div class="input-row">
-        <input type="text" id="n1" value="Player 1" style="width: 100px;">
-        <input type="number" id="s1" value="501" style="width: 60px;">
-        <input type="number" id="l1" value="0" style="width: 40px; text-align: center;">
+    <div class="input-row" style="display: flex; justify-content: space-around; align-items: center; margin-bottom: 8px;">
+        <input type="text" id="n1" value="Player 1" style="width: 90px;">
+        <input type="number" id="s1" value="501" style="width: 50px;">
+        <input type="number" id="l1" value="0" style="width: 35px; text-align: center;">
+        <span id="co1" style="width: 45px; text-align: center; font-weight: bold; color: #00e676;">-</span>
+        <span id="avg1" style="width: 50px; text-align: center; font-weight: bold; color: #00e676;">0.00</span>
     </div>
-    <div class="input-row">
-        <input type="text" id="n2" value="Player 2" style="width: 100px;">
-        <input type="number" id="s2" value="501" style="width: 60px;">
-        <input type="number" id="l2" value="0" style="width: 40px; text-align: center;">
+    <div class="input-row" style="display: flex; justify-content: space-around; align-items: center; margin-bottom: 8px;">
+        <input type="text" id="n2" value="Player 2" style="width: 90px;">
+        <input type="number" id="s2" value="501" style="width: 50px;">
+        <input type="number" id="l2" value="0" style="width: 35px; text-align: center;">
+        <span id="co2" style="width: 45px; text-align: center; font-weight: bold; color: #00e676;">-</span>
+        <span id="avg2" style="width: 50px; text-align: center; font-weight: bold; color: #00e676;">0.00</span>
     </div>
-    <div class="input-row">
-        <input type="text" id="n3" value="Player 3" style="width: 100px;">
-        <input type="number" id="s3" value="501" style="width: 60px;">
-        <input type="number" id="l3" value="0" style="width: 40px; text-align: center;">
+    <div class="input-row" style="display: flex; justify-content: space-around; align-items: center; margin-bottom: 8px;">
+        <input type="text" id="n3" value="Player 3" style="width: 90px;">
+        <input type="number" id="s3" value="501" style="width: 50px;">
+        <input type="number" id="l3" value="0" style="width: 35px; text-align: center;">
+        <span id="co3" style="width: 45px; text-align: center; font-weight: bold; color: #00e676;">-</span>
+        <span id="avg3" style="width: 50px; text-align: center; font-weight: bold; color: #00e676;">0.00</span>
     </div>
-    <div class="input-row">
-        <input type="text" id="n4" value="Player 4" style="width: 100px;">
-        <input type="number" id="s4" value="501" style="width: 60px;">
-        <input type="number" id="l4" value="0" style="width: 40px; text-align: center;">
+    <div class="input-row" style="display: flex; justify-content: space-around; align-items: center; margin-bottom: 8px;">
+        <input type="text" id="n4" value="Player 4" style="width: 90px;">
+        <input type="number" id="s4" value="501" style="width: 50px;">
+        <input type="number" id="l4" value="0" style="width: 35px; text-align: center;">
+        <span id="co4" style="width: 45px; text-align: center; font-weight: bold; color: #00e676;">-</span>
+        <span id="avg4" style="width: 50px; text-align: center; font-weight: bold; color: #00e676;">0.00</span>
     </div>
     <button class="btn-go" onclick="launchGame()">NEW LEG</button>
 </div>
