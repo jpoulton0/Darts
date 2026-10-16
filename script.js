@@ -53,8 +53,9 @@ function launchGame() {
             n: nameValue, 
             s: scoreValue, 
             legs: legsValue,
-            scoringPoints: 0, // Points scored while above 75
-            scoringDarts: 0   // Darts thrown while above 75
+            scoringPoints: 0,     // Points scored while above 75
+            scoringDarts: 0,      // Darts thrown while above 75
+            hasStartedScoring: false // Double-In Tracker: stays false until first non-zero score
         });
     }
 
@@ -82,7 +83,7 @@ function draw() {
     gs.p.forEach((p, i) => {
         let act = i === gs.idx ? 'active' : '';
         
-        // Calculate Scoring Average (only includes turns when starting score was > 75)
+        // Calculate Scoring Average (only includes turns when starting score was > 75 and player has doubled in)
         let avg = p.scoringDarts > 0 
             ? ((p.scoringPoints / p.scoringDarts) * 3).toFixed(2) 
             : "0.00";
@@ -116,9 +117,14 @@ function submit() {
     // 1. Validate Score
     if(v <= 180 && (currentPlayer.s - v >= 0)) {
         
-        // --- 75 CUTOFF LOGIC ---
-        // Only add to scoring average stats if the player started the turn above 75
-        if (currentPlayer.s > 75) {
+        // --- DOUBLE-IN & 75 CUTOFF LOGIC ---
+        // Mark player as started on their first non-zero score
+        if (!currentPlayer.hasStartedScoring && v > 0) {
+            currentPlayer.hasStartedScoring = true;
+        }
+
+        // Only add to average stats if player has doubled in AND score started above 75
+        if (currentPlayer.hasStartedScoring && currentPlayer.s > 75) {
             currentPlayer.scoringPoints += v;
             currentPlayer.scoringDarts += 3;
         }
