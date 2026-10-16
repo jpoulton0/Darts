@@ -41,22 +41,33 @@ let gs = { p: [], idx: 0, cur: "", starts: [], startingPlayerIndex: 0, sessionLe
  * Runs when you click "NEW LEG"
  */
 function launchGame() {
-    gs.p = [];
+    let isInitialStart = gs.p.length === 0;
     gs.starts = [];
+
     for(let i=1; i<=4; i++) {
         let nameValue = document.getElementById('n' + i).value;
         let scoreValue = parseInt(document.getElementById('s' + i).value) || 501;
         let legsValue = parseInt(document.getElementById('l' + i).value) || 0;
         
         gs.starts.push(scoreValue);
-        gs.p.push({
-            n: nameValue, 
-            s: scoreValue, 
-            legs: legsValue,
-            scoringPoints: 0,     // Points scored while above 75
-            scoringDarts: 0,      // Darts thrown while above 75
-            hasStartedScoring: false // Double-In Tracker: stays false until first non-zero score
-        });
+
+        if (isInitialStart) {
+            // First time setting up players for the session
+            gs.p.push({
+                n: nameValue, 
+                s: scoreValue, 
+                legs: legsValue,
+                scoringPoints: 0,     // Total points accumulated across session (>75)
+                scoringDarts: 0,      // Total darts accumulated across session (>75)
+                hasStartedScoring: false // Double-In Tracker for current leg
+            });
+        } else {
+            // Continuing session into next leg: retain scoringPoints & scoringDarts
+            gs.p[i-1].n = nameValue;
+            gs.p[i-1].s = scoreValue;
+            gs.p[i-1].legs = legsValue;
+            gs.p[i-1].hasStartedScoring = false; // Reset double-in requirement for new leg
+        }
     }
 
     gs.idx = gs.startingPlayerIndex;
@@ -83,7 +94,7 @@ function draw() {
     gs.p.forEach((p, i) => {
         let act = i === gs.idx ? 'active' : '';
         
-        // Calculate Scoring Average (only includes turns when starting score was > 75 and player has doubled in)
+        // Calculate Cumulative Session Average
         let avg = p.scoringDarts > 0 
             ? ((p.scoringPoints / p.scoringDarts) * 3).toFixed(2) 
             : "0.00";
@@ -117,16 +128,23 @@ function submit() {
     // 1. Validate Score
     if(v <= 180 && (currentPlayer.s - v >= 0)) {
         
-        // --- DOUBLE-IN & 75 CUTOFF LOGIC ---
-        // Mark player as started on their first non-zero score
-        if (!currentPlayer.hasStartedScoring && v > 0) {
-            currentPlayer.hasStartedScoring = true;
-        }
-
-        // Only add to average stats if player has doubled in AND score started above 75
-        if (currentPlayer.hasStartedScoring && currentPlayer.s > 75) {
-            currentPlayer.scoringPoints += v;
-            currentPlayer.scoringDarts += 3;
+        // --- DOUBLE-IN LOGIC ---
+        if (!currentPlayer.hasStartedScoring) {
+            if (v > 0) {
+                // First successful scoring turn of the current leg
+                currentPlayer.hasStartedScoring = true;
+                if (currentPlayer.s > 75) {
+                    currentPlayer.scoringPoints += v;
+                    currentPlayer.scoringDarts += 3;
+                }
+            }
+            // If v === 0 while NOT doubled in, do nothing
+        } 
+        else {
+            if (currentPlayer.s > 75) {
+                currentPlayer.scoringPoints += v;
+                currentPlayer.scoringDarts += 3;
+            }
         }
 
         currentPlayer.s -= v;
