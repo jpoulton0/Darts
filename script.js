@@ -41,12 +41,12 @@ function playFireworkSound() {
             const AudioCtx = window.AudioContext || window.webkitAudioContext;
             if (AudioCtx) audioCtx = new AudioCtx();
         }
-        if (!audioCtx || audioCtx.state === 'suspended') {
+        if (audioCtx && audioCtx.state === 'suspended') {
             audioCtx.resume();
         }
+        if (!audioCtx) return;
 
-        // Create short noise burst (150ms)
-        const bufferSize = audioCtx.sampleRate * 0.15;
+        const bufferSize = audioCtx.sampleRate * 0.12;
         const buffer = audioCtx.createBuffer(1, bufferSize, audioCtx.sampleRate);
         const data = buffer.getChannelData(0);
         for (let i = 0; i < bufferSize; i++) {
@@ -56,16 +56,14 @@ function playFireworkSound() {
         const noise = audioCtx.createBufferSource();
         noise.buffer = buffer;
 
-        // Lowpass filter to create a low "boom/pop" body
         const filter = audioCtx.createBiquadFilter();
         filter.type = 'lowpass';
-        filter.frequency.setValueAtTime(600 + Math.random() * 400, audioCtx.currentTime);
-        filter.frequency.exponentialRampToValueAtTime(80, audioCtx.currentTime + 0.15);
+        filter.frequency.setValueAtTime(500 + Math.random() * 300, audioCtx.currentTime);
+        filter.frequency.exponentialRampToValueAtTime(80, audioCtx.currentTime + 0.12);
 
-        // Fast volume decay
         const gain = audioCtx.createGain();
-        gain.gain.setValueAtTime(0.25, audioCtx.currentTime);
-        gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.15);
+        gain.gain.setValueAtTime(0.2, audioCtx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.12);
 
         noise.connect(filter);
         filter.connect(gain);
@@ -95,14 +93,14 @@ function startFireworks() {
 
     function createFirework() {
         const x = Math.random() * width;
-        const y = Math.random() * (height * 0.6);
-        const particleCount = 40 + Math.floor(Math.random() * 30);
+        const y = Math.random() * (height * 0.5);
+        const particleCount = 35 + Math.floor(Math.random() * 20);
         const colors = ['#00e676', '#ffd54f', '#ff1744', '#29b6f6', '#ab47bc', '#ffffff'];
         const color = colors[Math.floor(Math.random() * colors.length)];
 
         for (let i = 0; i < particleCount; i++) {
             const angle = Math.random() * Math.PI * 2;
-            const speed = Math.random() * 5 + 1;
+            const speed = Math.random() * 4 + 1;
             particles.push({
                 x: x,
                 y: y,
@@ -114,21 +112,20 @@ function startFireworks() {
             });
         }
 
-        // Trigger audio synthesizer on burst
         playFireworkSound();
     }
 
-    fireworksInterval = setInterval(createFirework, 450);
+    fireworksInterval = setInterval(createFirework, 500);
 
     function loop() {
-        ctx.fillStyle = 'rgba(10, 10, 10, 0.2)';
+        ctx.fillStyle = 'rgba(10, 10, 10, 0.25)';
         ctx.fillRect(0, 0, width, height);
 
         for (let i = particles.length - 1; i >= 0; i--) {
             let p = particles[i];
             p.x += p.vx;
             p.y += p.vy;
-            p.vy += 0.05; // gravity
+            p.vy += 0.05;
             p.alpha -= p.decay;
 
             if (p.alpha <= 0) {
@@ -138,13 +135,14 @@ function startFireworks() {
                 ctx.globalAlpha = p.alpha;
                 ctx.fillStyle = p.color;
                 ctx.beginPath();
-                ctx.arc(p.x, p.y, 3, 0, Math.PI * 2);
+                ctx.arc(p.x, p.y, 2.5, 0, Math.PI * 2);
                 ctx.fill();
                 ctx.restore();
             }
         }
 
-        if (document.getElementById('welcome-screen').style.display !== 'none') {
+        const welcomeScreen = document.getElementById('welcome-screen');
+        if (welcomeScreen && welcomeScreen.style.display !== 'none') {
             requestAnimationFrame(loop);
         }
     }
@@ -157,8 +155,11 @@ function startFireworks() {
  */
 function enterSetupScreen() {
     if (fireworksInterval) clearInterval(fireworksInterval);
-    document.getElementById('welcome-screen').style.display = 'none';
-    document.getElementById('setup-screen').style.display = 'flex';
+    const welcomeScreen = document.getElementById('welcome-screen');
+    const setupScreen = document.getElementById('setup-screen');
+    
+    if (welcomeScreen) welcomeScreen.style.display = 'none';
+    if (setupScreen) setupScreen.style.display = 'flex';
 }
 
 /**
