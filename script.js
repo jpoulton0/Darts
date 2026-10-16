@@ -25,11 +25,94 @@ const checkoutMap = {
 
 // --- GLOBAL DATA STORAGE ---
 let gs = { p: [], idx: 0, cur: "", starts: [], startingPlayerIndex: 0, sessionLegCount: 1 };
+let fireworksInterval = null;
 
-// --- AUTO-LOAD SAVED DATA ON STARTUP ---
+// --- AUTO-LOAD SAVED DATA & INITIALIZE FIREWORKS ---
 window.addEventListener('DOMContentLoaded', () => {
     loadSetupFromStorage();
+    startFireworks();
 });
+
+// --- FIREWORKS ANIMATION ENGINE ---
+function startFireworks() {
+    const canvas = document.getElementById('fireworks-canvas');
+    if (!canvas) return;
+    const ctx = canvas.getContext('2d');
+    
+    let width = canvas.width = window.innerWidth;
+    let height = canvas.height = window.innerHeight;
+
+    window.addEventListener('resize', () => {
+        width = canvas.width = window.innerWidth;
+        height = canvas.height = window.innerHeight;
+    });
+
+    let particles = [];
+
+    function createFirework() {
+        const x = Math.random() * width;
+        const y = Math.random() * (height * 0.6);
+        const particleCount = 40 + Math.floor(Math.random() * 30);
+        const colors = ['#00e676', '#ffd54f', '#ff1744', '#29b6f6', '#ab47bc', '#ffffff'];
+        const color = colors[Math.floor(Math.random() * colors.length)];
+
+        for (let i = 0; i < particleCount; i++) {
+            const angle = Math.random() * Math.PI * 2;
+            const speed = Math.random() * 5 + 1;
+            particles.push({
+                x: x,
+                y: y,
+                vx: Math.cos(angle) * speed,
+                vy: Math.sin(angle) * speed,
+                alpha: 1,
+                decay: Math.random() * 0.02 + 0.015,
+                color: color
+            });
+        }
+    }
+
+    fireworksInterval = setInterval(createFirework, 400);
+
+    function loop() {
+        ctx.fillStyle = 'rgba(10, 10, 10, 0.2)';
+        ctx.fillRect(0, 0, width, height);
+
+        for (let i = particles.length - 1; i >= 0; i--) {
+            let p = particles[i];
+            p.x += p.vx;
+            p.y += p.vy;
+            p.vy += 0.05; // gravity
+            p.alpha -= p.decay;
+
+            if (p.alpha <= 0) {
+                particles.splice(i, 1);
+            } else {
+                ctx.save();
+                ctx.globalAlpha = p.alpha;
+                ctx.fillStyle = p.color;
+                ctx.beginPath();
+                ctx.arc(p.x, p.y, 3, 0, Math.PI * 2);
+                ctx.fill();
+                ctx.restore();
+            }
+        }
+
+        if (document.getElementById('welcome-screen').style.display !== 'none') {
+            requestAnimationFrame(loop);
+        }
+    }
+
+    loop();
+}
+
+/**
+ * Transitions from Retirement Splash to Darts Setup Screen
+ */
+function enterSetupScreen() {
+    if (fireworksInterval) clearInterval(fireworksInterval);
+    document.getElementById('welcome-screen').style.display = 'none';
+    document.getElementById('setup-screen').style.display = 'flex';
+}
 
 /**
  * Swaps row inputs dynamically when throw order changes
@@ -38,7 +121,6 @@ function swapPlayerPosition(fromRow, targetPosStr) {
     let targetRow = parseInt(targetPosStr);
     if (fromRow === targetRow) return;
 
-    // Swap input values between rows
     let nameFrom = document.getElementById('n' + fromRow).value;
     let scoreFrom = document.getElementById('s' + fromRow).value;
     let legsFrom = document.getElementById('l' + fromRow).value;
@@ -49,13 +131,12 @@ function swapPlayerPosition(fromRow, targetPosStr) {
 
     document.getElementById('n' + fromRow).value = nameTarget;
     document.getElementById('s' + fromRow).value = scoreTarget;
-    document.getElementById('l' + fromRow).value = legsTarget;
+    document.getElementById('l' + fromRow).value = legsFrom;
 
     document.getElementById('n' + targetRow).value = nameFrom;
     document.getElementById('s' + targetRow).value = scoreFrom;
-    document.getElementById('l' + targetRow).value = legsFrom;
+    document.getElementById('l' + targetRow).value = legsTarget;
 
-    // Reset dropdown visuals to match row index
     for (let i = 1; i <= 4; i++) {
         document.getElementById('pos' + i).value = i;
     }
