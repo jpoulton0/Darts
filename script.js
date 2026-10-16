@@ -52,21 +52,28 @@ function launchGame() {
         gs.starts.push(scoreValue);
 
         if (isInitialStart) {
-            // First time setting up players for the session
+            // Initial session setup
             gs.p.push({
                 n: nameValue, 
                 s: scoreValue, 
                 legs: legsValue,
-                scoringPoints: 0,     // Total points accumulated across session (>75)
-                scoringDarts: 0,      // Total darts accumulated across session (>75)
-                hasStartedScoring: false // Double-In Tracker for current leg
+                scoringPoints: 0,        // Total session points (>75)
+                scoringDarts: 0,         // Total session darts (>75)
+                legDarts: 0,             // Total darts thrown in current leg
+                legScoringPoints: 0,     // Leg points (>75)
+                legScoringDarts: 0,      // Leg darts (>75)
+                highestCheckout: 0,      // Player's best checkout of session
+                hasStartedScoring: false 
             });
         } else {
-            // Continuing session into next leg: retain scoringPoints & scoringDarts
+            // Next leg setup - retain session stats, reset leg stats
             gs.p[i-1].n = nameValue;
             gs.p[i-1].s = scoreValue;
             gs.p[i-1].legs = legsValue;
-            gs.p[i-1].hasStartedScoring = false; // Reset double-in requirement for new leg
+            gs.p[i-1].legDarts = 0;
+            gs.p[i-1].legScoringPoints = 0;
+            gs.p[i-1].legScoringDarts = 0;
+            gs.p[i-1].hasStartedScoring = false;
         }
     }
 
@@ -94,7 +101,7 @@ function draw() {
     gs.p.forEach((p, i) => {
         let act = i === gs.idx ? 'active' : '';
         
-        // Calculate Cumulative Session Average
+        // Cumulative Session Average
         let avg = p.scoringDarts > 0 
             ? ((p.scoringPoints / p.scoringDarts) * 3).toFixed(2) 
             : "0.00";
@@ -128,22 +135,28 @@ function submit() {
     // 1. Validate Score
     if(v <= 180 && (currentPlayer.s - v >= 0)) {
         
-        // --- DOUBLE-IN LOGIC ---
+        let startScore = currentPlayer.s;
+
+        // --- DOUBLE-IN & STAT LOGIC ---
         if (!currentPlayer.hasStartedScoring) {
             if (v > 0) {
-                // First successful scoring turn of the current leg
                 currentPlayer.hasStartedScoring = true;
-                if (currentPlayer.s > 75) {
+                currentPlayer.legDarts += 3;
+                if (startScore > 75) {
                     currentPlayer.scoringPoints += v;
                     currentPlayer.scoringDarts += 3;
+                    currentPlayer.legScoringPoints += v;
+                    currentPlayer.legScoringDarts += 3;
                 }
             }
-            // If v === 0 while NOT doubled in, do nothing
         } 
         else {
-            if (currentPlayer.s > 75) {
+            currentPlayer.legDarts += 3;
+            if (startScore > 75) {
                 currentPlayer.scoringPoints += v;
                 currentPlayer.scoringDarts += 3;
+                currentPlayer.legScoringPoints += v;
+                currentPlayer.legScoringDarts += 3;
             }
         }
 
@@ -151,15 +164,33 @@ function submit() {
         
         // 2. Check for Win
         if(currentPlayer.s === 0) {
+            let checkoutScore = startScore; // The score hit to win the leg
+            if (checkoutScore > currentPlayer.highestCheckout) {
+                currentPlayer.highestCheckout = checkoutScore;
+            }
+
+            // Calculate winning player's leg 3-dart average
+            let legAvg = currentPlayer.legScoringDarts > 0 
+                ? ((currentPlayer.legScoringPoints / currentPlayer.legScoringDarts) * 3).toFixed(2)
+                : "0.00";
+
+            // Audio Announcement
             let winText = "Game, shot, and the leg... " + currentPlayer.n;
             let winMsg = new SpeechSynthesisUtterance(winText);
             winMsg.rate = 1.1;
             winMsg.pitch = 1.5;
             window.speechSynthesis.speak(winMsg);
 
-            document.getElementById('win-message').innerText = currentPlayer.n + " WINS!";
+            // Populate Leg Summary Breakdown Screen
+            document.getElementById('win-message').innerText = currentPlayer.n + " WINS LEG " + gs.sessionLegCount + "!";
+            document.getElementById('summary-winner').innerText = currentPlayer.n;
+            document.getElementById('summary-checkout').innerText = checkoutScore;
+            document.getElementById('summary-darts').innerText = currentPlayer.legDarts;
+            document.getElementById('summary-avg').innerText = legAvg;
+
             document.getElementById('win-modal').style.display = 'flex';
             
+            // Increment Legs Won in setup input
             let legInput = document.getElementById('l' + (gs.idx + 1));
             legInput.value = parseInt(legInput.value) + 1;
             
@@ -204,7 +235,7 @@ function submit() {
 }
 
 /**
- * Runs when you click "RETURN TO SCOREBOARD"
+ * Runs when you click "RETURN TO SCOREBOARD" / "NEXT LEG"
  */
 function closeWinModal() {
     document.getElementById('win-modal').style.display = 'none';
